@@ -7,6 +7,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ECS_SECRET  # 👈 This is required for environment secrets to be visible
 
     steps:
     - name: Checkout repo
@@ -18,6 +19,8 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
+
+    # remaining steps...
 
     - name: Log in to Amazon ECR
       id: login-ecr
