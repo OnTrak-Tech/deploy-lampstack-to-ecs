@@ -7,10 +7,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: ECS_SECRET  # 👈 This is required for environment secrets to be visible
+    environment: ECS_SECRET  # Load secrets from GitHub environment
 
     steps:
-    - name: Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Configure AWS credentials
@@ -20,21 +20,22 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    # remaining steps...
-
     - name: Log in to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to ECR
+    - name: Build, tag, and push Docker image to ECR
       env:
         ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
       run: |
         IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
+        echo "Building Docker image: $ECR_REPOSITORY:$IMAGE_TAG"
+
         docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
         docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+
         echo "IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
     - name: Update ECS service with new image
@@ -44,13 +45,29 @@ jobs:
         TASK_DEF: ${{ secrets.ECS_TASK_DEFINITION }}
         CONTAINER_NAME: visitor-counter-app-web
       run: |
+        echo "Describing existing task definition..."
         TASK_DEF_JSON=$(aws ecs describe-task-definition --task-definition $TASK_DEF)
-        NEW_TASK_DEF=$(echo $TASK_DEF_JSON | jq \
+
+        echo "Creating new task definition revision with updated image..."
+        NEW_TASK_DEF=$(echo "$TASK_DEF_JSON" | jq \
           --arg IMAGE "$IMAGE_URI" \
-          '.taskDefinition | {family, containerDefinitions, executionRoleArn, networkMode, requiresCompatibilities, cpu, memory} |
-           .containerDefinitions[0].image = $IMAGE | .')
+          '.taskDefinition |
+          {
+            family,
+            containerDefinitions,
+            executionRoleArn,
+            networkMode,
+            requiresCompatibilities,
+            cpu,
+            memory
+          } |
+          (.containerDefinitions[0].image = $IMAGE)')
 
         echo "$NEW_TASK_DEF" > new-task-def.json
         aws ecs register-task-definition --cli-input-json file://new-task-def.json
+
+        echo "Retrieving new revision number..."
         NEW_REVISION=$(aws ecs describe-task-definition --task-definition $TASK_DEF | jq -r '.taskDefinition.revision')
+
+        echo "Updating ECS service to new revision..."
         aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-definition "$TASK_DEF:$NEW_REVISION"
