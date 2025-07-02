@@ -78,7 +78,7 @@ try {
                 
                 <div class="stat">
                     <h3><?= $todayVisits ?></h3>
-                    <p>Todays Visits</p>
+                    <p>Today's Visits</p>
                 </div>
             </div>
             
