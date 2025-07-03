@@ -2,10 +2,10 @@
 $secret_json = getenv('DB_SECRET_JSON');
 $secret = json_decode($secret_json, true);
 
-$db_host = $secret['DB_HOST'];
-$db_user = $secret['DB_USERNAME'];
-$db_pass = $secret['DB_PASSWORD'];
-$db_name = $secret['DB_DATABASE'];
+$db_host = getenv['DB_HOST'];
+$db_user = getenv['DB_USERNAME'];
+$db_pass = getenv['DB_PASSWORD'];
+$db_name = getenv['DB_DATABASE'];
 
 try {
     $pdo = new PDO("mysql:host=$db_host;dbname=$db_name", $db_user, $db_pass);
