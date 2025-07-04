@@ -30,7 +30,7 @@
         },
         {
           "name": "DB_NAME",
-          "value": "lampstackecs-db" 
+          "value": "lampstackecs_db" 
         }
       ],
       "logConfiguration": {
