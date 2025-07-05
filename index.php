@@ -1,9 +1,13 @@
 <?php
 
-$db_host = getenv('DB_HOST');
-$db_user = getenv('DB_USER');
-$db_pass = getenv('DB_PASS');
-$db_name = getenv('DB_NAME');
+$secret_json = getenv('DB_SECRET_JSON');
+$secret = json_decode($secret_json, true);
+
+$db_host = $secret['DB_HOST'];
+$db_user = $secret['DB_USER'];
+$db_pass = $secret['DB_PASS'];
+$db_name = $secret['DB_NAME'];
+
 
 
 try {
@@ -59,7 +63,7 @@ try {
 </head>
 <body>
     <div class="container">
-        <h1>Analytics Dashboard</h1>
+        <h1>Visitor's Analytics Dashboard</h1>
         
         <?php if (isset($error)): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>
