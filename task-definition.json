@@ -18,7 +18,7 @@
       "secrets": [
       {
         "name": "DB_SECRET_JSON",
-        "valueFrom": "aarn:aws:secretsmanager:eu-west-1:313043028266:secret:lampstack-db-secret-LK267f"
+        "valueFrom": "arn:aws:secretsmanager:eu-west-1:313043028266:secret:lampstack-db-secret-LK267f"
       }
       ],
 
