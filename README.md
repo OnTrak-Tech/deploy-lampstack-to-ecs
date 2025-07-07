@@ -40,7 +40,7 @@ docker-compose up -d
 ```
 
 3. **Access the application**
-   - Open http://localhost:8080 in your browser
+   - Open http://localhost:8080 in your browser to test it locally.
    - The database will initialize automatically
 
 ### AWS Deployment
