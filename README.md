@@ -4,7 +4,7 @@ A modern LAMP stack application that tracks website visitors and displays real-t
 
 ## 🏗️ Architecture
 
-![Architecture Diagram](deploy-lampstack-to-ecs/Screenshots/ECS_DEPLOY.drawio.png)
+![Architecture Diagram](ECS_DEPLOY.png)
 
 The application follows a containerized microservices architecture deployed on AWS:
 
