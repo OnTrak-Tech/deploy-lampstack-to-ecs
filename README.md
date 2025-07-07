@@ -2,7 +2,7 @@
 
 A modern LAMP stack application that tracks website visitors and displays real-time analytics with a beautiful, responsive interface.
 
-## 🏗️ Architecture
+## 🏗️ Architecture Diagram
 
 ![Architecture Diagram](ECS_DEPLOY.png)
 
@@ -12,6 +12,7 @@ The application follows a containerized microservices architecture deployed on A
 - **Database**: MySQL 8.0 (RDS for production, local container for development)
 - **Container Registry**: Amazon ECR
 - **Orchestration**: Amazon ECS with Fargate
+- **Environment Configuration**: Amazon Secret Manager
 - **Load Balancing**: Application Load Balancer (ALB)
 - **CI/CD**: GitHub Actions for automated deployment
 
