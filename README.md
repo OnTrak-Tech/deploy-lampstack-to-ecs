@@ -48,6 +48,11 @@ docker-compose up -d
 1. **Set up GitHub Secrets**
    - `AWS_ACCESS_KEY_ID`
    - `AWS_SECRET_ACCESS_KEY`
+   - `AWS_REGION`
+   - `ECR_REPOSITORY`
+   - `ECS_CLUSTER`
+   - `ECS_SERVICE`
+   - `ECS_TASK_DEFINITION`
 
 2. **Push to main branch**
    - GitHub Actions will automatically build and deploy to ECS
