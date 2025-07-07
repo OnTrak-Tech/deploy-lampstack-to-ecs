@@ -31,7 +31,8 @@ The application follows a containerized microservices architecture deployed on A
 1. **Clone the repository**
 ```bash
 git clone <repository-url>
-cd visitor-counter-app
+cd deploy-lampstack-to-ecs
+
 ```
 
 2. **Start with Docker Compose**
