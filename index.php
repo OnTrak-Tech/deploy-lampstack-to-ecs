@@ -63,7 +63,7 @@ try {
 </head>
 <body>
     <div class="container">
-        <h1>Visitor's Analytics Dashboard</h1>
+        <h1>Visitors Analytics Dashboard</h1>
         
         <?php if (isset($error)): ?>
             <div class="error"><?= htmlspecialchars($error) ?></div>
