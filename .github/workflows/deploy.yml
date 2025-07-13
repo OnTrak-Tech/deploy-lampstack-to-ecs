@@ -1,76 +1,96 @@
+# GitHub Actions workflow name displayed in the Actions tab
 name: Deploy to AWS Fargate
 
+# Trigger conditions - workflow runs when code is pushed to main branch
 on:
   push:
-    branches: [main]
+    branches: [main]  # Only trigger on pushes to main branch
 
+# Define the deployment job
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    environment: ECS_SECRET  # Load secrets from GitHub environment
+    runs-on: ubuntu-latest  # Use latest Ubuntu runner environment
+    environment: ECS_SECRET  # Load secrets from GitHub environment named ECS_SECRET
 
     steps:
+      # Step 1: Download the repository code to the runner
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3  # Official GitHub action to checkout code
 
+      # Step 2: Set up AWS credentials for subsequent AWS CLI commands
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v2  # Official AWS action for credential setup
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}        # AWS access key from GitHub secrets
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS secret key from GitHub secrets
+          aws-region: ${{ secrets.AWS_REGION }}                       # AWS region from GitHub secrets
 
+      # Step 3: Authenticate with Amazon ECR to push Docker images
       - name: Log in to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
+        id: login-ecr  # Assign ID to reference outputs from this step
+        uses: aws-actions/amazon-ecr-login@v1  # Official AWS action for ECR authentication
 
+      # Step 4: Disable Docker BuildKit for compatibility with older Docker builds
       - name: Disable Docker BuildKit
-        run: echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV
+        run: echo "DOCKER_BUILDKIT=0" >> $GITHUB_ENV  # Set environment variable to disable BuildKit
 
+      # Step 5: Build Docker image and push to ECR repository
       - name: Build, tag, and push Docker image to ECR
         env:
-          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}  # ECR repository name from secrets
+          AWS_REGION: ${{ secrets.AWS_REGION }}          # AWS region from secrets
         run: |
+          # Create image tag using first 7 characters of Git commit SHA
           IMAGE_TAG=$(echo $GITHUB_SHA | cut -c1-7)
           echo "Building Docker image: $ECR_REPOSITORY:$IMAGE_TAG"
 
+          # Build Docker image with local tag
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          # Tag image with full ECR registry URL for pushing
           docker tag $ECR_REPOSITORY:$IMAGE_TAG ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
+          # Push tagged image to ECR repository
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG
 
+          # Store complete image URI in environment variable for next step
           echo "IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
 
+      # Step 6: Update ECS service to use the newly built Docker image
       - name: Update ECS service with new image
         env:
-          CLUSTER: ${{ secrets.ECS_CLUSTER }}
-          SERVICE: ${{ secrets.ECS_SERVICE }}
-          TASK_DEF: ${{ secrets.ECS_TASK_DEFINITION }}
-          CONTAINER_NAME: visitor-counter-app-web
+          CLUSTER: ${{ secrets.ECS_CLUSTER }}           # ECS cluster name from secrets
+          SERVICE: ${{ secrets.ECS_SERVICE }}           # ECS service name from secrets
+          TASK_DEF: ${{ secrets.ECS_TASK_DEFINITION }}  # ECS task definition name from secrets
+          CONTAINER_NAME: visitor-counter-app-web       # Container name within the task definition
         run: |
+          # Retrieve current task definition configuration
           echo "Describing existing task definition..."
           TASK_DEF_JSON=$(aws ecs describe-task-definition --task-definition $TASK_DEF)
 
+          # Create new task definition with updated Docker image URI
           echo "Creating new task definition revision with updated image..."
           NEW_TASK_DEF=$(echo "$TASK_DEF_JSON" | jq \
             --arg IMAGE "$IMAGE_URI" \
             '.taskDefinition |
             {
-              family,
-              containerDefinitions,
-              executionRoleArn,
-              networkMode,
-              requiresCompatibilities,
-              cpu,
-              memory
+              family,                    # Task definition family name
+              containerDefinitions,      # Container configuration array
+              executionRoleArn,         # IAM role for task execution
+              networkMode,              # Network configuration mode
+              requiresCompatibilities,  # Launch type compatibility (Fargate/EC2)
+              cpu,                      # CPU allocation
+              memory                    # Memory allocation
             } |
-            (.containerDefinitions[0].image = $IMAGE)')
+            (.containerDefinitions[0].image = $IMAGE)')  # Update first container's image URI
 
+          # Save new task definition to JSON file
           echo "$NEW_TASK_DEF" > new-task-def.json
+          # Register new task definition revision with ECS
           aws ecs register-task-definition --cli-input-json file://new-task-def.json
 
+          # Get the revision number of the newly registered task definition
           echo "Retrieving new revision number..."
           NEW_REVISION=$(aws ecs describe-task-definition --task-definition $TASK_DEF | jq -r '.taskDefinition.revision')
 
+          # Update ECS service to use the new task definition revision
           echo "Updating ECS service to new revision..."
           aws ecs update-service --cluster $CLUSTER --service $SERVICE --task-definition "$TASK_DEF:$NEW_REVISION"

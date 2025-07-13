@@ -1,0 +1,529 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: |
+  CloudFormation template for a LAMP stack on AWS ECS Fargate with RDS MySQL.
+  Configured for a "Pilot Light" DR strategy, where services are scaled to 0 by default.
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Network Configuration"
+        Parameters:
+          - VpcCidr
+          - PublicSubnet1Cidr
+          - PublicSubnet2Cidr
+          - PrivateSubnet1Cidr
+          - PrivateSubnet2Cidr
+      - Label:
+          default: "Application Configuration"
+        Parameters:
+          - AppName
+          - EcrRepositoryName
+          - ContainerPort
+          - EcsTaskCpu
+          - EcsTaskMemory
+          - EcsDesiredCount
+      - Label:
+          default: "Database Configuration"
+        Parameters:
+          - DbInstanceType
+          - DbAllocatedStorage
+          - DbUsername
+          - DbPassword
+          - DbName
+
+Parameters:
+  AppName:
+    Type: String
+    Default: lampstack
+    Description: A unique name for your application, used to prefix resources.
+  
+  VpcCidr:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: CIDR block for the VPC.
+
+  PublicSubnet1Cidr:
+    Type: String
+    Default: 10.0.1.0/24
+    Description: CIDR block for the first public subnet.
+  PublicSubnet2Cidr:
+    Type: String
+    Default: 10.0.2.0/24
+    Description: CIDR block for the second public subnet.
+
+  PrivateSubnet1Cidr:
+    Type: String
+    Default: 10.0.3.0/24
+    Description: CIDR block for the first private subnet.
+  PrivateSubnet2Cidr:
+    Type: String
+    Default: 10.0.4.0/24
+    Description: CIDR block for the second private subnet.
+
+  EcrRepositoryName:
+    Type: String
+    Description: The name of your ECR repository (e.g., lampstack).
+  ContainerPort:
+    Type: Number
+    Default: 80
+    Description: The port your application container listens on.
+
+  EcsTaskCpu:
+    Type: String
+    Default: 256
+    Description: The number of CPU units for the Fargate task (e.g., 256 for 0.25 vCPU).
+  EcsTaskMemory:
+    Type: String
+    Default: 512
+    Description: The amount of memory (in MiB) for the Fargate task.
+  EcsDesiredCount:
+    Type: Number
+    Default: 0 # Set to 0 for Pilot Light DR setup. Change for production deployment.
+    Description: The desired number of running tasks for the ECS service.
+
+  DbInstanceType:
+    Type: String
+    Default: db.t3.micro
+    Description: The RDS DB instance class (e.g., db.t3.micro, db.r5.large).
+  DbAllocatedStorage:
+    Type: Number
+    Default: 20
+    Description: The allocated storage in GiB for the RDS instance.
+  DbUsername:
+    Type: String
+    Default: admin
+    Description: Master username for the RDS database.
+  DbPassword:
+    Type: String
+    Description: Master password for the RDS database.
+    NoEcho: true # Hides the password in CloudFormation events and outputs.
+  DbName:
+    Type: String
+    Default: lampstackecs_db
+    Description: The name of the database to create.
+
+Resources:
+  # ------------------------------------------------------------#
+  #  VPC and Network
+  # ------------------------------------------------------------#
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-VPC"
+
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-IGW"
+
+  AttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-PublicRouteTable"
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: AttachGateway
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PublicSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnet1Cidr
+      AvailabilityZone: !Select [ 0, !GetAZs '' ] # Gets the first AZ in the current region
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-PublicSubnet1"
+
+  PublicSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PublicSubnet2Cidr
+      AvailabilityZone: !Select [ 1, !GetAZs '' ] # Gets the second AZ in the current region
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-PublicSubnet2"
+
+  PublicSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnet1Cidr
+      AvailabilityZone: !Select [ 0, !GetAZs '' ] # Gets the first AZ in the current region
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-PrivateSubnet1"
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref VPC
+      CidrBlock: !Ref PrivateSubnet2Cidr
+      AvailabilityZone: !Select [ 1, !GetAZs '' ] # Gets the second AZ in the current region
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-PrivateSubnet2"
+
+  EIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-NATGatewayEIP"
+
+  NATGateway:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId: !GetAtt EIP.AllocationId
+      SubnetId: !Ref PublicSubnet1
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-NATGateway"
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-PrivateRouteTable"
+
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway
+
+  PrivateSubnet1RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1
+      RouteTableId: !Ref PrivateRouteTable
+
+  PrivateSubnet2RouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2
+      RouteTableId: !Ref PrivateRouteTable
+
+  # ------------------------------------------------------------#
+  #  Security Groups
+  # ------------------------------------------------------------#
+  ALBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AppName}-ALB-SG"
+      GroupDescription: Security group for ALB allowing HTTP/HTTPS access.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-ALB-SG"
+
+  FargateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AppName}-Fargate-SG"
+      GroupDescription: Security group for Fargate tasks, allowing traffic from ALB and to RDS.
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: !Ref ContainerPort
+          ToPort: !Ref ContainerPort
+          SourceSecurityGroupId: !GetAtt ALBSecurityGroup.GroupId # Allow traffic from ALB
+      SecurityGroupEgress: # Allow all outbound, will be restricted by separate rule for RDS
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-Fargate-SG"
+
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${AppName}-RDS-SG"
+      GroupDescription: Security group for RDS, allowing traffic from Fargate tasks.
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-RDS-SG"
+
+  # NEW RESOURCES TO BREAK CIRCULAR DEPENDENCY
+  FargateToRdsEgressRule:
+    Type: AWS::EC2::SecurityGroupEgress
+    DependsOn: RDSSecurityGroup # Ensure RDS SG exists before this rule is added
+    Properties:
+      GroupId: !GetAtt FargateSecurityGroup.GroupId
+      IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      DestinationSecurityGroupId: !GetAtt RDSSecurityGroup.GroupId
+
+  RdsFromFargateIngressRule:
+    Type: AWS::EC2::SecurityGroupIngress
+    DependsOn: FargateSecurityGroup # Ensure Fargate SG exists before this rule is added
+    Properties:
+      GroupId: !GetAtt RDSSecurityGroup.GroupId
+      IpProtocol: tcp
+      FromPort: 3306
+      ToPort: 3306
+      SourceSecurityGroupId: !GetAtt FargateSecurityGroup.GroupId
+
+  # ------------------------------------------------------------#
+  #  Database (RDS)
+  # ------------------------------------------------------------#
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: Subnet group for RDS instance
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-DBSubnetGroup"
+
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub "${AppName}-db"
+      DBInstanceClass: !Ref DbInstanceType
+      Engine: mysql
+      MasterUsername: !Ref DbUsername
+      MasterUserPassword: !Ref DbPassword
+      AllocatedStorage: !Ref DbAllocatedStorage
+      VPCSecurityGroups:
+        - !GetAtt RDSSecurityGroup.GroupId # RDS still refers to its SG
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 7
+      #MultiAz: true # This can be enabled for higher availability within the DR region itself, but not for cross-region replication
+      StorageType: gp2
+      DBName: !Ref DbName
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-RDS"
+
+  # ------------------------------------------------------------#
+  #  Secrets Manager
+  # ------------------------------------------------------------#
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: !Sub "${AppName}/db/credentials"
+      Description: Database credentials for the LAMP application.
+      SecretString: !Sub |
+        {
+          "DB_HOST": "${RDSInstance.Endpoint.Address}",
+          "DB_USERNAME": "${DbUsername}",
+          "DB_PASSWORD": "${DbPassword}",
+          "DB_DATABASE": "${DbName}"
+        }
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-DBSecret"
+
+  # ------------------------------------------------------------#
+  #  ECS Cluster and Task Role
+  # ------------------------------------------------------------#
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: !Sub "${AppName}-cluster"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-cluster"
+
+  ECSTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${AppName}-ECSTaskExecutionRole"
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+      Policies:
+        - PolicyName: !Sub "${AppName}-SecretsManagerAccessPolicy"
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref DBSecret
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-ECSTaskExecutionRole"
+
+  # ------------------------------------------------------------#
+  #  CloudWatch Log Group
+  # ------------------------------------------------------------#
+  AppLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/ecs/${AppName}"
+      RetentionInDays: 30
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-LogGroup"
+
+  # ------------------------------------------------------------#
+  #  ECS Task Definition and Service
+  # ------------------------------------------------------------#
+  ECSTaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Sub "${AppName}-task"
+      Cpu: !Ref EcsTaskCpu
+      Memory: !Ref EcsTaskMemory
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      ExecutionRoleArn: !GetAtt ECSTaskExecutionRole.Arn
+      ContainerDefinitions:
+        - Name: !Sub "${AppName}-container"
+          Image: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${EcrRepositoryName}:latest"
+          PortMappings:
+            - ContainerPort: !Ref ContainerPort
+              Protocol: tcp
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref AppLogGroup
+              awslogs-region: !Ref "AWS::Region"
+              awslogs-stream-prefix: ecs
+          Secrets:
+            - Name: DB_HOST
+              ValueFrom: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DBSecret}:DB_HOST::"
+            - Name: DB_USERNAME
+              ValueFrom: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DBSecret}:DB_USERNAME::"
+            - Name: DB_PASSWORD
+              ValueFrom: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DBSecret}:DB_PASSWORD::"
+            - Name: DB_DATABASE
+              ValueFrom: !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${DBSecret}:DB_DATABASE::"
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-TaskDef"
+
+  ECSService:
+    Type: AWS::ECS::Service
+    Properties:
+      ServiceName: !Sub "${AppName}-service"
+      Cluster: !Ref ECSCluster
+      TaskDefinition: !Ref ECSTaskDefinition
+      DesiredCount: !Ref EcsDesiredCount
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          Subnets:
+            - !Ref PrivateSubnet1
+            - !Ref PrivateSubnet2
+          SecurityGroups:
+            - !GetAtt FargateSecurityGroup.GroupId
+      LoadBalancers:
+        - ContainerName: !Sub "${AppName}-container"
+          ContainerPort: !Ref ContainerPort
+          TargetGroupArn: !Ref ALBTG
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-Service"
+
+  # ------------------------------------------------------------#
+  #  Application Load Balancer (ALB)
+  # ------------------------------------------------------------#
+  ALB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Name: !Sub "${AppName}-alb"
+      Subnets:
+        - !Ref PublicSubnet1
+        - !Ref PublicSubnet2
+      SecurityGroups:
+        - !GetAtt ALBSecurityGroup.GroupId
+      Scheme: internet-facing
+      Type: application
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-ALB"
+
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref ALB
+      Port: 80
+      Protocol: HTTP
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ALBTG
+
+  ALBTG:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Name: !Sub "${AppName}-tg"
+      Port: !Ref ContainerPort
+      Protocol: HTTP
+      VpcId: !Ref VPC
+      HealthCheckPath: /
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 2
+      UnhealthyThresholdCount: 2
+      TargetType: ip
+      Tags:
+        - Key: Name
+          Value: !Sub "${AppName}-TargetGroup"
+          

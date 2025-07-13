@@ -1,0 +1,592 @@
+{
+    "services": [
+        {
+            "serviceArn": "arn:aws:ecs:eu-west-1:313043028266:service/lamp-fargate-cluster/lamp-service",
+            "serviceName": "lamp-service",
+            "clusterArn": "arn:aws:ecs:eu-west-1:313043028266:cluster/lamp-fargate-cluster",
+            "loadBalancers": [
+                {
+                    "targetGroupArn": "arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764",
+                    "containerName": "lampstack-container",
+                    "containerPort": 80
+                }
+            ],
+            "serviceRegistries": [],
+            "status": "ACTIVE",
+            "desiredCount": 1,
+            "runningCount": 1,
+            "pendingCount": 0,
+            "launchType": "FARGATE",
+            "platformVersion": "LATEST",
+            "platformFamily": "Linux",
+            "taskDefinition": "arn:aws:ecs:eu-west-1:313043028266:task-definition/lampstack-task:23",
+            "deploymentConfiguration": {
+                "deploymentCircuitBreaker": {
+                    "enable": false,
+                    "rollback": false
+                },
+                "maximumPercent": 200,
+                "minimumHealthyPercent": 100
+            },
+            "deployments": [
+                {
+                    "id": "ecs-svc/6010541219315047976",
+                    "status": "PRIMARY",
+                    "taskDefinition": "arn:aws:ecs:eu-west-1:313043028266:task-definition/lampstack-task:23",
+                    "desiredCount": 1,
+                    "pendingCount": 0,
+                    "runningCount": 1,
+                    "failedTasks": 0,
+                    "createdAt": 1751885838.616,
+                    "updatedAt": 1751886023.051,
+                    "launchType": "FARGATE",
+                    "platformVersion": "1.4.0",
+                    "platformFamily": "Linux",
+                    "networkConfiguration": {
+                        "awsvpcConfiguration": {
+                            "subnets": [
+                                "subnet-065c14d88a8cb4ccb",
+                                "subnet-0c37f9bab1344159e"
+                            ],
+                            "securityGroups": [
+                                "sg-08e2f49123300afca"
+                            ],
+                            "assignPublicIp": "ENABLED"
+                        }
+                    },
+                    "rolloutState": "COMPLETED",
+                    "rolloutStateReason": "ECS deployment ecs-svc/6010541219315047976 completed."
+                }
+            ],
+            "roleArn": "arn:aws:iam::313043028266:role/aws-service-role/ecs.amazonaws.com/AWSServiceRoleForECS",
+            "events": [
+                {
+                    "id": "33478d86-c2ed-4b71-a195-2a15d8a79e0c",
+                    "createdAt": 1752405048.247,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "9c5f8e62-f404-4c9f-b590-3d045156688d",
+                    "createdAt": 1752383405.857,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "68aee934-b86e-4186-85f0-72188ac020ed",
+                    "createdAt": 1752361760.947,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "05f21237-b73a-4b28-bd90-727a8ab7e60e",
+                    "createdAt": 1752340133.148,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "8e26409e-2306-4f18-93df-44e9d91dd0cf",
+                    "createdAt": 1752318495.219,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "2cdc56f1-00f5-4654-8aa0-28182772784a",
+                    "createdAt": 1752296887.107,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "a7abb470-5adc-4839-9e5e-bfcf74dc703f",
+                    "createdAt": 1752275279.582,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "db79ab5c-d1c8-4dad-a4a0-1aa579c04770",
+                    "createdAt": 1752253646.531,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "c9320acb-0fc5-4c84-bc38-9a7b6b1ecbc9",
+                    "createdAt": 1752232023.332,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "ed8805b1-30c0-492d-b718-baa885e9a21c",
+                    "createdAt": 1752210416.771,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "78ff8da1-7107-4245-9b75-e0b776aa35f9",
+                    "createdAt": 1752188789.899,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "5b218c89-6a8d-448c-aa5a-1be43f6c9e93",
+                    "createdAt": 1752167159.871,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "1ae508ee-8624-4c94-93d9-d40cd179cdbe",
+                    "createdAt": 1752145535.193,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "e0ae6097-1f73-4f69-b850-8bb7fee46c05",
+                    "createdAt": 1752123894.246,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "95e4f541-6c70-4bff-9bc3-91678477b864",
+                    "createdAt": 1752102250.088,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "d3f9a5d2-ee5e-4db7-998f-132988c08ebb",
+                    "createdAt": 1752080626.121,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "e1ac1c03-60b9-4c7f-8db4-afd3b63eacb5",
+                    "createdAt": 1752059009.299,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "9ef3479a-2591-43ea-a919-676533baa93b",
+                    "createdAt": 1752037401.059,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "2c0df0ce-ed20-4e1d-be1e-4c503a7fc7dc",
+                    "createdAt": 1752015761.265,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "f4af18de-ebb6-4971-b10e-6e1ee8d6d1e2",
+                    "createdAt": 1751994159.647,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "cd6de112-26da-4c82-ae36-ab8ad29d7874",
+                    "createdAt": 1751972514.574,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "7c6720d1-1834-4c1c-be93-88a5e2733cdf",
+                    "createdAt": 1751950896.238,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "e8583be0-daeb-4894-a5ca-a400a62f340d",
+                    "createdAt": 1751929273.922,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "deeffd94-fdc9-4dff-8985-5177c4101dbf",
+                    "createdAt": 1751907638.824,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "b98fe8d2-6268-41df-9702-ccb21be03c03",
+                    "createdAt": 1751886023.057,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "43a10e1d-29a9-442e-89f3-c7e7c4fd0b6a",
+                    "createdAt": 1751886023.056,
+                    "message": "(service lamp-service) (deployment ecs-svc/6010541219315047976) deployment completed."
+                },
+                {
+                    "id": "5324ba8d-4f20-4693-9259-08577348cfe3",
+                    "createdAt": 1751885971.386,
+                    "message": "(service lamp-service, taskSet ecs-svc/5920535311487074169) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "93e5c2b1-bd6a-471d-b408-c843edc697e0",
+                    "createdAt": 1751885971.381,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "ac67543b-9380-4deb-b499-69d8f64b0bde",
+                    "createdAt": 1751885961.382,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task 14adc04a4d2b49288c34c765d6cffb0c)."
+                },
+                {
+                    "id": "e8b812e4-70ef-438b-8324-591260a2945d",
+                    "createdAt": 1751885909.735,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "f5e86afd-a6d5-49d6-a807-e54e90e66215",
+                    "createdAt": 1751885869.499,
+                    "message": "(service lamp-service) has started 1 tasks: (task 2755b217f5134533940a5392d42b4e64)."
+                },
+                {
+                    "id": "ea8d291e-4c62-40c8-8ffa-f99aab95518f",
+                    "createdAt": 1751885807.119,
+                    "message": "(service lamp-service, taskSet ecs-svc/2782928791292745907) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "3f170b0b-e327-4b0d-b93a-f2b83460423e",
+                    "createdAt": 1751885807.116,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "6408d6fb-b5f4-4189-8268-b11c4fe8ccbd",
+                    "createdAt": 1751885805.635,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task bdd3e67f285f4b7ca2141c4138d7e52c)."
+                },
+                {
+                    "id": "92894211-f206-443a-be23-215ab99df214",
+                    "createdAt": 1751885756.066,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "c898c734-59fc-4282-8a34-5a7fe9731848",
+                    "createdAt": 1751885725.743,
+                    "message": "(service lamp-service) has started 1 tasks: (task 14adc04a4d2b49288c34c765d6cffb0c)."
+                },
+                {
+                    "id": "2a901c43-e6c4-422c-98f9-480dec42f42d",
+                    "createdAt": 1751885672.958,
+                    "message": "(service lamp-service, taskSet ecs-svc/6512016529974573188) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "251f0583-eddc-4916-a8fb-bb7fd311e184",
+                    "createdAt": 1751885672.954,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "0b574e5b-ecdd-46e3-9b8c-e8cf2e9952a0",
+                    "createdAt": 1751885663.073,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task c1111150f6a241ee982c4ed2081b72df)."
+                },
+                {
+                    "id": "18260c5f-1130-4f93-90d3-4c9d00936f85",
+                    "createdAt": 1751885612.021,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "a6ffafbd-4ebc-46bd-8065-df46aadc05f6",
+                    "createdAt": 1751885581.687,
+                    "message": "(service lamp-service) has started 1 tasks: (task c1111150f6a241ee982c4ed2081b72df)."
+                },
+                {
+                    "id": "4b714ed1-a01d-47a8-8546-3406e91a25bb",
+                    "createdAt": 1751885497.301,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "dd4c4b08-1dff-4e47-8baf-420efae6c7a1",
+                    "createdAt": 1751885497.3,
+                    "message": "(service lamp-service) (deployment ecs-svc/2782928791292745907) deployment completed."
+                },
+                {
+                    "id": "e85dcc27-6cc7-4400-b7e7-ef0c3eac4372",
+                    "createdAt": 1751885436.291,
+                    "message": "(service lamp-service, taskSet ecs-svc/7535114133803174702) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "ff0ec0a8-39a7-4924-b4f7-66508e56d6cc",
+                    "createdAt": 1751885436.287,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "1c2f9ffe-d51f-4f93-9250-5740a84a6780",
+                    "createdAt": 1751885426.266,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task 64c5911e2b4842f9858997c07816b224)."
+                },
+                {
+                    "id": "80827b5a-05ff-4c78-a049-7f122141f90b",
+                    "createdAt": 1751885375.277,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "802cc7ac-ef07-4004-b2af-29159b334136",
+                    "createdAt": 1751885345.015,
+                    "message": "(service lamp-service) has started 1 tasks: (task bdd3e67f285f4b7ca2141c4138d7e52c)."
+                },
+                {
+                    "id": "4e2e9138-b858-49ff-88f9-6baebfa3a8ef",
+                    "createdAt": 1751885312.351,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "be9e0602-5c43-4b49-b908-e086efe72758",
+                    "createdAt": 1751885312.35,
+                    "message": "(service lamp-service) (deployment ecs-svc/7535114133803174702) deployment completed."
+                },
+                {
+                    "id": "d606b291-fdfa-453f-91ff-1fa459f71799",
+                    "createdAt": 1751885251.989,
+                    "message": "(service lamp-service, taskSet ecs-svc/9451068569377107580) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "74c90b65-94c6-4c8a-9ab4-416f8a24b8a4",
+                    "createdAt": 1751885251.984,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "88d369ee-e166-4c9c-834f-c526bf124280",
+                    "createdAt": 1751885241.309,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task f6957e17ad4b42018445bce99324e59a)."
+                },
+                {
+                    "id": "8bf09299-783e-4b44-ab74-cce6ab5ff9eb",
+                    "createdAt": 1751885190.349,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "2c2ff300-61be-4fb0-a07b-b4b35dc5b4be",
+                    "createdAt": 1751885159.327,
+                    "message": "(service lamp-service) has started 1 tasks: (task 64c5911e2b4842f9858997c07816b224)."
+                },
+                {
+                    "id": "f8f55def-a138-4032-a0a0-1af04f0788df",
+                    "createdAt": 1751884859.931,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "82005b85-4a53-4cb9-9e3c-1fb5ade361cb",
+                    "createdAt": 1751884859.93,
+                    "message": "(service lamp-service) (deployment ecs-svc/9451068569377107580) deployment completed."
+                },
+                {
+                    "id": "0492cdee-34bc-4f18-bd30-011e8fb5c558",
+                    "createdAt": 1751884799.266,
+                    "message": "(service lamp-service, taskSet ecs-svc/5880933797368959581) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "613fb39e-f169-4cac-9121-41942f790b5a",
+                    "createdAt": 1751884799.262,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "deeb9e92-2f14-419a-a4f6-afba3d6b105c",
+                    "createdAt": 1751884789.373,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task 68bb4e4ad0514acd94c7a3a4b403cad3)."
+                },
+                {
+                    "id": "6a785dc1-d7f0-44a7-a350-e9f1c637d479",
+                    "createdAt": 1751884738.394,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "4aaa0cb6-9270-4766-8136-1bfaf0115db3",
+                    "createdAt": 1751884706.991,
+                    "message": "(service lamp-service) has started 1 tasks: (task f6957e17ad4b42018445bce99324e59a)."
+                },
+                {
+                    "id": "3fc43ecd-579e-4d68-ab47-0ce102c717e0",
+                    "createdAt": 1751870907.6,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "87f3ec2b-dfbe-4d17-ae59-6daf8d779894",
+                    "createdAt": 1751849278.347,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "707f8540-7b74-48e9-a5da-a175b11bd406",
+                    "createdAt": 1751849278.346,
+                    "message": "(service lamp-service) (deployment ecs-svc/5880933797368959581) deployment completed."
+                },
+                {
+                    "id": "cff14c19-d73b-47f5-8dc6-240138af33ba",
+                    "createdAt": 1751849216.576,
+                    "message": "(service lamp-service, taskSet ecs-svc/3671061939599933507) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "73d30dde-c65d-4976-813b-adefcdbd0f73",
+                    "createdAt": 1751849216.572,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "82c82d44-f71a-422f-b3f0-e54c0e8402f6",
+                    "createdAt": 1751849207.04,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task baef22137db64da7912ef58b57cba4d5)."
+                },
+                {
+                    "id": "323c139e-e7fa-4098-99e5-6a04bf57ab9a",
+                    "createdAt": 1751849155.265,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "ab72f269-ac53-48d8-bb5e-2635a443fe8b",
+                    "createdAt": 1751849125.47,
+                    "message": "(service lamp-service) has started 1 tasks: (task 68bb4e4ad0514acd94c7a3a4b403cad3)."
+                },
+                {
+                    "id": "c4735ffb-c4f2-43a6-9959-58234196ca18",
+                    "createdAt": 1751847170.642,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "2d2f818d-f726-4053-8c85-584f2a12163b",
+                    "createdAt": 1751825537.144,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "91e32af5-1fd9-475b-915a-4313474d3dd6",
+                    "createdAt": 1751803928.943,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "091b9ca4-369b-4c77-86eb-a6d21a1bd090",
+                    "createdAt": 1751782286.774,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "e449fb01-83a8-4022-80f8-91b543cb7100",
+                    "createdAt": 1751760676.739,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "19ed4b98-5b41-43dc-aee0-870b1c95206e",
+                    "createdAt": 1751739037.186,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "a3e26d34-47ab-4470-ad31-b9561b0cf3b8",
+                    "createdAt": 1751739037.185,
+                    "message": "(service lamp-service) (deployment ecs-svc/3671061939599933507) deployment completed."
+                },
+                {
+                    "id": "420c41eb-0229-442d-9739-f7889b0341b6",
+                    "createdAt": 1751738974.369,
+                    "message": "(service lamp-service, taskSet ecs-svc/3702063526020085452) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "4251a229-4539-49d6-b72e-e85ff26bfeda",
+                    "createdAt": 1751738974.363,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "1946d9f3-a739-4e7d-b70c-9445f2828c26",
+                    "createdAt": 1751738965.041,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task e1b43a941a9049ac9ffb77e0bf84c339)."
+                },
+                {
+                    "id": "8ae690b2-b2a1-4a91-92d0-267f39a8fa7a",
+                    "createdAt": 1751738913.891,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "964f7bd8-576d-4068-8535-71d4665b18c4",
+                    "createdAt": 1751738883.92,
+                    "message": "(service lamp-service) has started 1 tasks: (task baef22137db64da7912ef58b57cba4d5)."
+                },
+                {
+                    "id": "b9cc430f-b0e6-48e0-b06e-34ae8231c1b1",
+                    "createdAt": 1751737376.562,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "55fc0322-759b-40ed-bd72-44cec854a899",
+                    "createdAt": 1751737062.208,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "f9e68b82-89ca-489a-9f54-659feab04ede",
+                    "createdAt": 1751737062.157,
+                    "message": "(service lamp-service, taskSet ecs-svc/3702063526020085452) has begun draining connections on 1 tasks."
+                },
+                {
+                    "id": "581b71ef-8b36-4e65-aabb-d950ecd656c9",
+                    "createdAt": 1751737062.153,
+                    "message": "(service lamp-service) deregistered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "1e1154f4-9e91-4a6a-9283-19a4fa406a90",
+                    "createdAt": 1751737052.105,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task c5f73a32d86748e1b1270097e8a0262a)."
+                },
+                {
+                    "id": "13bd9ba9-9dc8-4643-bd23-cf90adec1715",
+                    "createdAt": 1751737052.058,
+                    "message": "(service lamp-service) (task c5f73a32d86748e1b1270097e8a0262a) (port 80) is unhealthy in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764) due to (reason Request timed out)."
+                },
+                {
+                    "id": "73c6ffd6-8bbf-415f-8f4c-b359c780af17",
+                    "createdAt": 1751737011.684,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "2d184495-9474-436f-858b-1bf51f5e9c80",
+                    "createdAt": 1751736981.375,
+                    "message": "(service lamp-service) has started 1 tasks: (task e1b43a941a9049ac9ffb77e0bf84c339). Amazon ECS replaced 1 tasks due to an unhealthy status."
+                },
+                {
+                    "id": "40b4f86e-1bf4-47f9-92e4-6344d4eba277",
+                    "createdAt": 1751736663.508,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "c8cfcbe8-4ee8-45fd-8a31-1817b5ae591b",
+                    "createdAt": 1751736663.507,
+                    "message": "(service lamp-service) (deployment ecs-svc/3702063526020085452) deployment completed."
+                },
+                {
+                    "id": "fdb682c2-b07f-418a-ad5f-142c4cf3ad70",
+                    "createdAt": 1751736613.026,
+                    "message": "(service lamp-service) has stopped 1 running tasks: (task 5aec2272d3ba4dba989776a45a307416)."
+                },
+                {
+                    "id": "851a4bdd-7287-4c62-b7cc-a2a5a87bbb5e",
+                    "createdAt": 1751736561.579,
+                    "message": "(service lamp-service) registered 1 targets in (target-group arn:aws:elasticloadbalancing:eu-west-1:313043028266:targetgroup/lampstack-tg/899eb92d4fde0764)"
+                },
+                {
+                    "id": "e9d3b423-979d-4a86-876a-6e7dfc7d409b",
+                    "createdAt": 1751736530.574,
+                    "message": "(service lamp-service) has started 1 tasks: (task c5f73a32d86748e1b1270097e8a0262a)."
+                },
+                {
+                    "id": "eb242723-fe56-4a52-916a-91ce61c32556",
+                    "createdAt": 1751731035.571,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "3f98254a-231c-4c1e-9689-57d261e05ca8",
+                    "createdAt": 1751709416.936,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "9603f390-1dc2-45ea-afcd-4967945526cc",
+                    "createdAt": 1751687807.685,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "0ad9b5fe-73ae-4111-9b16-4d83d2538673",
+                    "createdAt": 1751666194.982,
+                    "message": "(service lamp-service) has reached a steady state."
+                },
+                {
+                    "id": "feaf447c-4a6d-4fc2-b789-b339a21dbc06",
+                    "createdAt": 1751644564.212,
+                    "message": "(service lamp-service) has reached a steady state."
+                }
+            ],
+            "createdAt": 1751465395.639,
+            "placementConstraints": [],
+            "placementStrategy": [],
+            "networkConfiguration": {
+                "awsvpcConfiguration": {
+                    "subnets": [
+                        "subnet-065c14d88a8cb4ccb",
+                        "subnet-0c37f9bab1344159e"
+                    ],
+                    "securityGroups": [
+                        "sg-08e2f49123300afca"
+                    ],
+                    "assignPublicIp": "ENABLED"
+                }
+            },
+            "healthCheckGracePeriodSeconds": 0,
+            "schedulingStrategy": "REPLICA",
+            "deploymentController": {
+                "type": "ECS"
+            },
+            "createdBy": "arn:aws:iam::313043028266:user/IAMTraining",
+            "enableECSManagedTags": false,
+            "propagateTags": "NONE",
+            "enableExecuteCommand": false,
+            "availabilityZoneRebalancing": "DISABLED"
+        }
+    ],
+    "failures": []
+}
