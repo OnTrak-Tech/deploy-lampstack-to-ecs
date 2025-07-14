@@ -15,6 +15,12 @@ The application follows a containerized microservices architecture deployed on A
 - **Environment Configuration**: Amazon Secret Manager
 - **Load Balancing**: Application Load Balancer (ALB)
 - **CI/CD**: GitHub Actions for automated deployment
+- **Disaster Recovery**: Automated database backups and multi-AZ failover for high availability
+
+## 🌐 Live Demo
+
+- **Primary Environment:** [http://lampstack-alb-1810802055.eu-west-1.elb.amazonaws.com/](http://lampstack-alb-1810802055.eu-west-1.elb.amazonaws.com/)
+- **Disaster Recovery Environment:** [http://lampstack-alb-94575188.eu-north-1.elb.amazonaws.com/](http://lampstack-alb-94575188.eu-north-1.elb.amazonaws.com/)
 
 ## ✨ Features
 
@@ -24,6 +30,7 @@ The application follows a containerized microservices architecture deployed on A
 - **Automatic Setup**: Database tables created automatically on first run
 - **Containerized**: Full Docker support for easy deployment
 - **Cloud-Ready**: AWS ECS deployment with infrastructure as code
+- **Disaster Recovery**: Automated RDS backups, point-in-time restore, and multi-AZ support
 
 ## 🚀 Quick Start
 
@@ -82,29 +89,30 @@ visitor-counter-app/
 - **Containerization**: Docker & Docker Compose
 - **Cloud Platform**: AWS (ECS, RDS, ECR, ALB)
 - **CI/CD**: GitHub Actions
+- **Disaster Recovery**: AWS RDS automated backups, snapshots, and multi-AZ deployments
 
 ## 📊 Database Schema
 
 The application automatically creates a `visitors` table:
 
-| Column | Type | Description |
-|--------|------|-------------|
-| id | INT AUTO_INCREMENT | Primary key |
-| ip_address | VARCHAR(45) | Visitor IP address |
-| user_agent | TEXT | Browser/client information |
-| visit_time | TIMESTAMP | Visit timestamp |
-| page_url | VARCHAR(255) | Requested page URL |
+| Column      | Type             | Description                |
+|-------------|------------------|----------------------------|
+| id          | INT AUTO_INCREMENT | Primary key              |
+| ip_address  | VARCHAR(45)      | Visitor IP address         |
+| user_agent  | TEXT             | Browser/client information |
+| visit_time  | TIMESTAMP        | Visit timestamp            |
+| page_url    | VARCHAR(255)     | Requested page URL         |
 
 ## 🔧 Configuration
 
 ### Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| DB_HOST | Database hostname | your database |
-| DB_NAME | Database name | your database name |
-| DB_USER | Database username | root |
-| DB_PASS | Database password | password |
+| Variable | Description         | Default            |
+|----------|---------------------|--------------------|
+| DB_HOST  | Database hostname   | your database      |
+| DB_NAME  | Database name       | your database name |
+| DB_USER  | Database username   | root               |
+| DB_PASS  | Database password   | password           |
 
 ### Docker Compose Services
 
@@ -143,6 +151,14 @@ The application tracks:
 - **Prepared Statements**: SQL injection protection
 - **Environment Variables**: Sensitive data stored securely
 - **Container Security**: Minimal attack surface with PHP-Apache base image
+
+## 🛡️ Disaster Recovery
+
+- **Automated Backups**: RDS instance is configured for daily automated backups.
+- **Point-in-Time Restore**: Recover the database to any point within the backup retention period.
+- **Multi-AZ Deployment**: RDS is deployed in multiple availability zones for high availability and failover.
+- **Manual Snapshots**: Take manual snapshots before major changes or upgrades.
+- **Restore Procedures**: Documented steps for restoring from backup or snapshot in case of failure.
 
 ## 📝 License
 
