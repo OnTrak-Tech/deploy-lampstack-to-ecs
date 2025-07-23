@@ -29,6 +29,9 @@ The DR strategy uses a "Pilot Light" approach with the following characteristics
 - **Target RPO**: 1 hour
 - Database backups are taken hourly and transferred to the DR region
 
+## 🌐 Live Demo
+- **Disaster Recovery Environment:** [http://lampstack-alb-94575188.eu-north-1.elb.amazonaws.com/](http://lampstack-alb-94575188.eu-north-1.elb.amazonaws.com/)
+
 ## Components
 
 ### CloudFormation Template
