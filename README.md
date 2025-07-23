@@ -20,7 +20,6 @@ The application follows a containerized microservices architecture deployed on A
 ## 🌐 Live Demo
 
 - **Primary Environment:** [http://lampstack-alb-1810802055.eu-west-1.elb.amazonaws.com/](http://lampstack-alb-1810802055.eu-west-1.elb.amazonaws.com/)
-- **Disaster Recovery Environment:** [http://lampstack-alb-94575188.eu-north-1.elb.amazonaws.com/](http://lampstack-alb-94575188.eu-north-1.elb.amazonaws.com/)
 
 ## ✨ Features
 
