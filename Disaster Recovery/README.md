@@ -1,6 +1,6 @@
 # Disaster Recovery Plan for Visitor Counter App
 
-![Architecture Diagram](lampstack-ecs.png)
+![Architecture Diagram](lamp.png)
 
 ## Overview
 
